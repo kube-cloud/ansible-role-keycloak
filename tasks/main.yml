@@ -1,0 +1,29 @@
+---
+# Install Docker main tasks on Supported system
+- name: "({{ ansible_distribution }}) DOCKER::Main - Install Docker main tasks on Supported system"
+  block:
+
+   # Include Initialize tasks (Linux)
+   - name: Include Initialize tasks
+     include_tasks: "initialize.yml"
+
+   # Include Install tasks (Linux)
+   - name: "({{ ansible_distribution }}) DOCKER::Main - Include Install tasks"
+     include_tasks: "install-{{ ansible_distribution | lower }}.yml"
+
+   # Flush Handlers
+   - name: "({{ ansible_distribution }}) DOCKER::Main - Force all notified handlers to run"
+     meta: flush_handlers
+
+   # Include Install Compose tasks (Linux)
+   - name: "({{ ansible_distribution }}) DOCKER::Main - Include Install Compose tasks"
+     include_tasks: "install-compose.yml"
+
+   # Include Docker Engine Post Install tasks (Linux)
+   - name: "({{ ansible_distribution }}) DOCKER::Main - Include Post Install tasks"
+     include_tasks: "post-install.yml"
+     when:
+      - docker_post_install_script | length > 0
+
+  when:
+   - ansible_os_family == "RedHat" or ansible_os_family == "Debian"

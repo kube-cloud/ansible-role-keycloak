@@ -1,0 +1,51 @@
+---
+
+- name: "({{ ansible_distribution }}) DOCKER::Install - Role Installs for Community Edition"
+  block:
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Packages Cleaning for CentOS"
+     yum:
+      name: "{{ docker_deleted_packages }}"
+      state: absent
+     tags:
+      - molecule-idempotence-notest
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Packages Install - Prerequisites"
+     yum:
+      name: "{{ docker_required_packages }}"
+      state: present
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Packages repository Install - Docker"
+     command: >
+      yum-config-manager --add-repo={{ docker_repository_file }} && \
+      yum-config-manager --enable docker-ce-nightly && \
+      yum-config-manager --enable docker-ce-test
+     args:
+      creates: /etc/yum.repos.d/docker-ce.repo
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Packages Install - Docker"
+     yum:
+      name: "{{ docker_packages }}"
+      state: present
+     register: docker_install_result
+     changed_when: docker_install_result.changes.installed|length == docker_packages|length
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Authorize Users - Docker"
+     user:
+      name: "{{ item }}"
+      group: "docker"
+     with_items: "{{ docker_authorized_users }}"
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Initialize service template"
+     template:
+      dest: "{{ docker_service_file }}"
+      src: "docker.service-{{ ansible_distribution }}.j2"
+     notify:
+      - systemctl daemon-reload
+      - docker enable
+      - docker restart
+     tags:
+      - molecule-idempotence-notest
+
+  when:
+   - community_edition|bool

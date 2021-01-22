@@ -1,0 +1,28 @@
+---
+
+# Keycloak Version
+keycloak_version: 12.0.1
+
+# Archived Version
+keycloak_archived: false
+
+# Keycloak Archive filename
+keycloak_archive_filename: "keycloak-{{ keycloak_version }}.tar.gz"
+
+# Keycloak Download URL
+keycloak_download_url: "https://github.com/keycloak/keycloak/releases/download/{{ keycloak_version }}/{{ keycloak_archive_filename }}"
+
+# Keycloak Installation Directory
+keycloak_install_dir: /opt/keycloak
+
+# Keycloak Home Dir
+keycloak_home_dir: "{{ keycloak_install_dir }}/keycloak-{{ keycloak_version }}"
+
+# Keycloak Data dir
+keycloak_data_dir: "{{ keycloak_home_dir }}/data"
+
+# Keycloak Log dir
+keycloak_log_dir: "{{ keycloak_home_dir }}/logs"
+
+# Keycloak Config dir
+keycloak_config_dir: "{{ keycloak_home_dir }}/conf"

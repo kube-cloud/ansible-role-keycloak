@@ -1,0 +1,60 @@
+---
+
+- name: "({{ ansible_distribution }}) DOCKER::Install - Role Installs for Community Edition"
+  block:
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Packages Cleaning"
+     apt:
+      name: "{{ docker_deleted_packages }}"
+      state: absent
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Update Packages"
+     apt:
+      update_cache: true
+     tags:
+      - molecule-idempotence-notest
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Install Prerequisites Packages"
+     apt:
+      name: "{{ docker_required_packages }}"
+      state: present
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Install Docker Repository Official APT GPG Key"
+     apt_key:
+      id: "{{ docker_gpg_key_fingerpring }}"
+      url: "{{ docker_gpg_key }}"
+      state: present
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Install Docker Add required repositories"
+     apt_repository:
+      repo: "deb {{ docker_repository_baseurl }} {{ ansible_distribution_release }} {{ item }}"
+      state: present
+      update_cache: true
+     with_items:
+      - stable
+      - test
+      - nightly
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Install Docker Packages"
+     apt:
+      name: "{{ docker_packages }}"
+      state: present
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Authorize Users - Docker"
+     user:
+      name: "{{ item }}"
+      group: "docker"
+     with_items: "{{ docker_authorized_users }}"
+
+   - name: "({{ ansible_distribution }}) DOCKER::Install - Initialize service template"
+     template:
+      dest: "{{ docker_service_file }}"
+      src: "docker.service-{{ ansible_distribution }}.j2"
+     notify:
+      - systemctl daemon-reload
+      - docker enable
+      - docker restart
+     tags:
+      - molecule-idempotence-notest
+
+  when: community_edition|bool

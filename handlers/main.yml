@@ -1,0 +1,28 @@
+---
+
+# Handler execution order is related to handler file declaration (not task fired order)
+
+# Daemon reload handler
+- name: systemctl daemon-reload
+  systemd:
+   daemon_reload: true
+  changed_when: false
+  ignore_errors: true
+
+# Enable Docker handler
+- name: docker enable
+  service:
+   name: docker
+   enabled: true
+
+# Start Docker handler
+- name: docker start
+  service:
+   name: docker
+   state: started
+
+# Restart Docker handler
+- name: docker restart
+  service:
+   name: docker
+   state: restarted

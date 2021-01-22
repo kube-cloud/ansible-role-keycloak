@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  vars_files:
+   - "test-vars-ce-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+
+  roles:
+   - role: ansible-role-docker

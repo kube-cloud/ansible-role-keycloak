@@ -1,0 +1,12 @@
+---
+
+- name: "({{ ansible_distribution }}) DOCKER::Post-install - Force handler execution"
+  meta: flush_handlers
+
+- name: "({{ ansible_distribution }}) DOCKER::Post-install - Execute the post instal script"
+  shell:
+   cmd: "{{ _docker_scripts_dir }}/{{ _docker_post_install_script }} {{ docker_post_install_script_parameters | join(' ') }}"
+  environment:
+   DOCKER_DATA_DIR: "{{ _docker_data_dir }}"
+   DOCKER_SCRIPTS_ASSETS_DIR: "{{ _docker_scripts_dir }}"
+   DOCKER_SECURITY_ASSETS_DIR: "{{ _docker_security_dir }}"
