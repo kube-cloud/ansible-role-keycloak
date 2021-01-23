@@ -1,11 +1,27 @@
 ---
 
 # Get Java version String (eg: 11.0.9, 1.8.0_181)
-- name: "({{ ansible_distribution }}) DOCKER::Initialize - Check current JAVA version."
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Check current JAVA version."
   command: >
-    java -version 2>&1 | grep version | awk '{print $3}' | sed 's/"//g'
-    warn=no
+    java -version
   changed_when: false
   failed_when: false
   check_mode: false
-  register: java_installed_version
+  register: _java_version
+
+# Print Current JAVA Version
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Print Current JAVA version Check Raw result"
+  debug:
+   msg: "{{ _java_version }}"
+
+# Extract Java Major and Minor version
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Define Java Install Status"
+  set_fact:
+   _java_installed: "{{ _java_version.rc == 0 }}"
+
+# Extract Java Major and Minor version
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Extract Java Major and Minor version"
+  set_fact:
+   _java_version_major: "{{ _java_version.stderr_lines[0].split(' ')[2].split('.')[0] | regex_replace('^\"', '') }}"
+  when:
+   - _java_installed|bool

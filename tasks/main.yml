@@ -20,3 +20,11 @@
         - "../vars"
   ignore_errors: true
   tags: keycloak
+
+  # Include Initialize tasks (Linux)
+- name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Initialize Tasks"
+  include_tasks: "initialize.yml"
+
+  # Include Checks Tasks (Linux)
+- name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Checks Tasks"
+  include_tasks: "checks.yml"

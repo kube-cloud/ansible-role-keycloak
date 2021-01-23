@@ -1,0 +1,8 @@
+---
+
+# Check Java is installed
+- name: "({{ ansible_distribution }}) KEYCLOAK::Check Java Installed"
+  fail:
+   msg: "Check that JAVA is Installed"
+  when:
+   - not _java_installed|bool

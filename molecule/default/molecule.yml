@@ -7,8 +7,10 @@ dependency:
         ignore-errors: true
 driver:
     name: docker
-lint: |
-    yamllint .
+lint:
+    name: yamllint
+    options:
+        config-file: .yamllint
 platforms:
     - name: ${MOLECULE_NAME:-bionic}
       image: "${MOLECULE_DISTRO:-kubecloudsas/docker-ansible-test:v1.1.0-xenial-py3}"
