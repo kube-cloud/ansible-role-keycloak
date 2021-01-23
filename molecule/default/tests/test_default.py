@@ -6,106 +6,71 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
-def test_docker_installed(host):
+def test_java_installed(host):
 
-    # Docker expected version major
-    expected_major = '19'
+    # Java expected version major
+    java_major = '11'
 
-    # Docker expected version minor
-    expected_minor = '03'
+    # Java expected version minor
+    java_minor = '0.1'
 
-    # Expected Docker command path
-    docker_command_path = '/usr/bin/docker'
+    # Java expected version
+    java_version = java_major + '.' + java_minor
 
-    # Check that docker command exists
-    assert host.file(docker_command_path).exists
+    # Java expected implementation
+    java_impl = 'openjdk'
 
-    # Execute docker command and get result
-    docker_command_run = host.run(docker_command_path + ' --version')
+    # Java Home Path
+    java_home_path = '/usr/lib/jvm/java-{}-openjdk'.format(java_version)
 
-    # Assert that run is OK
-    assert docker_command_run.rc == 0
+    # Java archive file
+    java_archive_path = '/tmp/openjdk-{}.tar.gz'.format(java_version)
 
-    # Get the running docker major version
-    major_version = docker_command_run.stdout\
-                                      .split('\n')[0]\
-                                      .split(' ')[2]\
-                                      .split('.')[0]
+    # Java Home Dirctory
+    java_home = host.file(java_home_path)
 
-    # Get the running docker minor version
-    minor_version = docker_command_run.stdout\
-                                      .split('\n')[0]\
-                                      .split(' ')[2]\
-                                      .split('.')[1]
+    # Java Downloaded file
+    java_archive = host.file(java_archive_path)
 
-    # Assert on the excepected major version
-    assert expected_major == major_version
+    # Check that Java Archive exists
+    assert java_archive.exists
 
-    # Assert on the excepected minor version
-    assert expected_minor == minor_version
+    # Check that Java Archive is File
+    assert java_archive.is_file
 
-    # Get docker service handler
-    service = host.service('docker')
+    # Check that Java Home exists
+    assert java_home.exists
 
-    # Check that service is enabled
-    service.is_enabled is True
+    # Check that Java Home is Directory
+    assert java_home.is_directory
 
-    # Check that service is started
-    assert service.is_running is True
+    # Execute the Java Home Script
+    assert host.run(". /etc/profile.d/java_home.sh").rc == 0
 
+    # Run Java version
+    java_version_run = host.run('java -version')
 
-def test_compose_installed(host):
+    # Assert that run os OK
+    assert java_version_run.rc == 0
 
-    # Compose expected version major
-    expected_major = '1'
+    # java -version result:
+    #  openjdk version "1.8.0_161"
+    #  OpenJDK Runtime Environment 18.9 (build 11.0.1+13)
+    #  OpenJDK 64-Bit Server VM 18.9 (build 11.0.1+13, mixed mode)
+    # First Split result:
+    #  java version "1.8.0_161"
+    # Second Split result
+    #  "1.8.0_161"
+    java_version_ext = java_version_run.stderr.split('\n')[0].split(' ')[2]
 
-    # Compose expected version minor
-    expected_minor = '24'
+    # Get Java implementation
+    java_impl_ext = java_version_run.stderr.split('\n')[0].split(' ')[0]
 
-    # Installed Compose command path
-    installed_path = '/usr/local/bin/docker-compose'
+    # Assert on version major
+    assert java_version_ext.find(java_major) >= 0
 
-    # Expected Docker Compose command path
-    linked_path = '/usr/bin/docker-compose'
+    # Assert on version minor
+    assert java_version_ext.find(java_minor) >= 0
 
-    # Check that Compose installed command exists
-    assert host.file(installed_path).exists
-
-    # Check that Compose command is file
-    assert host.file(installed_path).is_file
-
-    # Check that Compose command exists
-    assert host.file(linked_path).exists
-
-    # Check that Compose command is symlink
-    assert host.file(linked_path).is_symlink
-
-    # Check that Compose symlink target
-    assert host.file(linked_path).linked_to == installed_path
-
-    # Assert on command file mode
-    assert oct(host.file(installed_path).mode) == '0o755'
-
-    # Execute Compose command and get result
-    compose_command_run = host.run(linked_path + ' --version')
-
-    # Assert that run is OK
-    assert compose_command_run.rc == 0
-
-    # Get the running docker major version
-    major_version = compose_command_run.stdout\
-                                       .split('\n')[0]\
-                                       .split(' ')[2]\
-                                       .split('.')[0]
-
-    # Get the running docker minor version
-    minor_version = compose_command_run.stdout\
-                                       .split('\n')[0]\
-                                       .split(' ')[2]\
-                                       .split('.')[1]
-
-    # Assert on the excepected major version
-    assert expected_major == major_version
-
-    # Assert on the excepected minor version
-    assert expected_minor == minor_version
+    # Assert that version is Java implementation is OpenJDK
+    assert java_impl_ext == java_impl

@@ -1,8 +1,19 @@
 ---
 - name: Converge
   hosts: all
-  vars_files:
-   - "test-vars-ce-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
-
   roles:
-   - role: ansible-role-docker
+   - role: jetune.java
+     vars:
+      from_repo: false
+      implementation: OPENJDK
+      v_major: 11
+      v_minor: 0.1
+      build: 13
+      os: linux
+      arch: x64
+      checksum: sha256:7a6bb980b9c91c478421f865087ad2d69086a0583aeeb9e69204785e8e97dcfd
+      alternative_priority: 100
+      cacerts_override: false
+      is_default: true
+
+   - role: ansible-role-keycloak

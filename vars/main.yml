@@ -1,31 +1,44 @@
 ---
 
-_keycloak_download:
-  12.0.2:
+# KeyCloak Download File directory
+_keycloak_download_dir: "/var/cache/keycloak"
+
+# KeyCloak Remote URL MAP
+_keycloak_downloads:
+  12.0:
     url: "https://github.com/keycloak/keycloak/releases/download/12.0.2/keycloak-12.0.2.tar.gz"
-    dest: "/var/cache/keycloak/keycloak-12.0.2.tar.gz"
-    checksum: "sha1:9e34533bc421f53c4428b74ac4c3fe702ac65131"
-  6.10.0:
-    url: "https://product-downloads.atlassian.com/software/stash/downloads/atlassian-bitbucket-6.10.0.tar.gz"
-    dest: "/var/cache/ansible/atlassian-bitbucket-6.10.0.tar.gz"
-    checksum: "sha1:171b177622bbb9e894fee1652e5b30e225285f61"
-  6.9.1:
-    url: "https://product-downloads.atlassian.com/software/stash/downloads/atlassian-bitbucket-6.9.1.tar.gz"
-    dest: "/var/cache/ansible/atlassian-bitbucket-6.9.1.tar.gz"
-    checksum: "sha1:bce47e2e9c1b1f45bf2e3069217cfe1051f0663e"
-  6.9.0:
-    url: "https://product-downloads.atlassian.com/software/stash/downloads/atlassian-bitbucket-6.9.0.tar.gz"
-    dest: "/var/cache/ansible/atlassian-bitbucket-6.9.0.tar.gz"
-    checksum: "sha1:6596a19932a433945eb6b012457f4f3ac1aa980c"
+    checksum: "sha1:3a4f1bc19871c70f395416dc0103f8fa8469af83"
+  11.0:
+    url: "https://downloads.jboss.org/keycloak/11.0.3/keycloak-11.0.3.tar.gz"
+    checksum: "sha1:87bae7fd63b49756f54e4e293fb37329f117e30d"
+  10.0:
+    url: "https://downloads.jboss.org/keycloak/10.0.2/keycloak-10.0.2.tar.gz"
+    checksum: "sha1:2b90bdefd3c837b2f3cc3d44263b6503cd6fbf62"
+  9.0:
+    url: "https://downloads.jboss.org/keycloak/9.0.3/keycloak-9.0.3.tar.gz"
+    checksum: "sha1:39bc5aaddc15f365f5318919b9644298a751767b"
 
-_mysql_jdbc_download:
-  5.1.48:
-    url: "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.48.tar.gz"
-    dest: "/var/cache/ansible/mysql-connector-java-5.1.48.tar.gz"
-    checksum: "sha1:a8067480d7d7e4a975771e08b48b64de18837341"
+# MySQL Remote URL MAP
+_mysql_jdbc_downloads:
+  8.0:
+    url: "https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-java-8.0.22.tar.gz"
+    checksum: "MD5:eb4e915366543844a80a06ea111ec6f7"
+  5.1:
+    url: "https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-java-5.1.48.tar.gz"
+    checksum: "MD5:9e6eee4e6df8d3474622bed952513fe5"
 
-_postgresql_jdbc_download:
-  42.2.10:
-    url: "https://jdbc.postgresql.org/download/postgresql-42.2.10.jar"
-    dest: "/var/cache/ansible/postgresql-42.2.10.jar"
-    checksum: "sha1:338af492789fd198dbd52735a22b1946030ecc96"
+# PostgreSql Remote URL MAP
+_postgresql_jdbc_downloads:
+  42.2:
+    url: "https://jdbc.postgresql.org/download/postgresql-42.2.18.jar"
+    filename: "/var/cache/ansible/postgresql-42.2.jar"
+    checksum: "sha1:A0A9C1D43C7727EEAF1B729477891185D3C71751"
+  42.1:
+    url: "https://jdbc.postgresql.org/download/postgresql-42.1.4.jar"
+    checksum: "sha1:1C7788D16B67D51F2F38AE99E474ECE968BF715A"
+  42.0:
+    url: "https://jdbc.postgresql.org/download/postgresql-42.0.0.jar"
+    checksum: "sha1:938EDE0CDF862CC4EABA5023A86254783AF1D261"
+  9.4:
+    url: "https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar"
+    checksum: "sha1:38931D70811D9BFCECF9C06F7222973C038A12DE"
