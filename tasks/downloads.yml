@@ -1,0 +1,13 @@
+---
+
+# Download Keycloak/JDBC Connetors Binaries
+- name: "({{ ansible_distribution }}) KEYCLOAK::Downloads - Keycloak/JDBC Connectors Binaries"
+  get_url:
+   url: "{{ item.url }}"
+   dest: "{{ _keycloak_downloaded_file_path }}"
+   checksum: "{{ item.checksum }}"
+  loop:
+   - "{{ _keycloak_downloaded }}"
+   - "{{ _mysql_jdbc_download }}"
+   - "{{ _postgresql_jdbc_download }}"
+

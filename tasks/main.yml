@@ -28,3 +28,7 @@
   # Include Checks Tasks (Linux)
 - name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Checks Tasks"
   include_tasks: "checks.yml"
+
+  # Include Downloads Tasks (Linux)
+- name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Downloads Tasks"
+  include_tasks: "downloads.yml"

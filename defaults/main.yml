@@ -1,16 +1,10 @@
 ---
 
 # Keycloak Version
-keycloak_version: 12.0.1
+keycloak_version: 12.0
 
-# Archived Version
-keycloak_archived: false
-
-# Keycloak Archive filename
-keycloak_archive_filename: "keycloak-{{ keycloak_version }}.tar.gz"
-
-# Keycloak Download URL
-keycloak_download_url: "https://github.com/keycloak/keycloak/releases/download/{{ keycloak_version }}/{{ keycloak_archive_filename }}"
+# Keycloak Download
+keycloak_download: "{{ _keycloak_downloads[keycloak_version] }}"
 
 # Keycloak Installation Directory
 keycloak_install_dir: /opt/keycloak
@@ -26,3 +20,9 @@ keycloak_log_dir: "{{ keycloak_home_dir }}/logs"
 
 # Keycloak Config dir
 keycloak_config_dir: "{{ keycloak_home_dir }}/conf"
+
+# Mysql driver version
+mysql_jdbc_version: 8.0
+
+# Postgre SQL driver version
+postgres_jdbc_version: 42.2

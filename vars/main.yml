@@ -31,7 +31,6 @@ _mysql_jdbc_downloads:
 _postgresql_jdbc_downloads:
   42.2:
     url: "https://jdbc.postgresql.org/download/postgresql-42.2.18.jar"
-    filename: "/var/cache/ansible/postgresql-42.2.jar"
     checksum: "sha1:A0A9C1D43C7727EEAF1B729477891185D3C71751"
   42.1:
     url: "https://jdbc.postgresql.org/download/postgresql-42.1.4.jar"

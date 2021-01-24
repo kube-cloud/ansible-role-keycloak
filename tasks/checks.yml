@@ -6,3 +6,30 @@
    msg: "Check that JAVA is Installed"
   when:
    - not _java_installed|bool
+
+# Check Keycloak Download Set Correctly
+- name: "({{ ansible_distribution }}) KEYCLOAK::Check Keycloak Download"
+  fail:
+   msg: "Check that [keycloak_download] is set correctly or choose a predefined version"
+  when: >
+   _keycloak_download is not defined or
+   _keycloak_download.url is not defined or
+   _keycloak_download.checksum is not defined
+
+# Check MySQL JDBC Connector Download Set Correctly
+- name: "({{ ansible_distribution }}) KEYCLOAK::Check MySQL JDBC Connector Download"
+  fail:
+   msg: "Check that [mysql_jdbc_download] is set correctly or choose a predefined version"
+  when: >
+   _mysql_jdbc_download is not defined or
+   _mysql_jdbc_download.url is not defined or
+   _mysql_jdbc_download.checksum is not defined
+
+# Check PostsreSQL JDBC Connector Download Set Correctly
+- name: "({{ ansible_distribution }}) KEYCLOAK::Check PostsreSQL JDBC Connector Download"
+  fail:
+   msg: "Check that [postgresql_jdbc_download] is set correctly or choose a predefined version"
+  when: >
+   _postgresql_jdbc_download is not defined or
+   _postgresql_jdbc_download.url is not defined or
+   _postgresql_jdbc_download.checksum is not defined
