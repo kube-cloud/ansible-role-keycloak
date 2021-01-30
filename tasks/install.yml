@@ -1,2 +1,86 @@
 ---
 
+# Unarchive Keycloak
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install - Unarchive Downloaded Keycloak archives"
+  unarchive:
+    src: "{{ _keycloak_download_file_path }}"
+    dest: "{{ keycloak_home_dir }}"
+    creates: "{{ keycloak_home_dir }}/bin/standalone.sh"
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+  notify:
+    - rebuild home ownership
+
+# Generate All Keycloak Environments Variables
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install - Generate All Keycloak Environments Variables"
+  template:
+    src: "environments/keycloak_envs.sh.j2"
+    dest: "/etc/profile.d/keycloak.sh"
+    mode: a+x
+
+# Install MySQL Driver Module if Needed
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install Install MySQL Driver Block If Needed"
+  block:
+
+    # Copy MySQL Driver To Keycloak Module Location
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Install Copy MySQL Driver To Keycloak Module Location"
+      shell: >
+        mv {{ _mysql_jdbc_download_file_path }} {{ _mysql_driver_module_dir }} &&
+        touch {{ _mysql_driver_module_dir }}/.driver.created
+      args:
+        creates: "{{ _mysql_driver_module_dir }}/.driver.created"
+
+    # Generate MySQL Driver Module Descriptor
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Install Generate MySQL Driver Module Descriptor"
+      template:
+        src: "modules/module.xml.j2"
+        dest: "{{ _mysql_driver_module_dir }}/module.xml"
+        owner: "{{ keycloak_os_user }}"
+        group: "{{ keycloak_os_group }}"
+      vars:
+        module_name: "{{ _mysql_driver_module.name }}"
+        module_namespace_version: "{{ _mysql_driver_module.module_namespace_version }}"
+        module_root_resource: "{{ _mysql_driver_module.module_root_resource }}"
+        module_dependencies: "{{ _mysql_driver_module.module_dependencies }}"
+        module_artifacts: []
+        module_properties: []
+        module_main_class: ""
+      notify:
+        - rebuild module ownership
+
+  when:
+    - install_mysql_database_driver|bool
+
+# Install Postgres Driver Module if Needed
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install Install Postgres Driver Block If Needed"
+  block:
+
+    # Copy Postgres Driver To Keycloak Module Location
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Install Copy Postgres Driver To Keycloak Module Location"
+      shell: >
+        mv {{ _postgresql_jdbc_download_file_path }} {{ _postgres_driver_module_dir }} &&
+        touch {{ _postgres_driver_module_dir }}/.driver.created
+      args:
+        creates: "{{ _postgres_driver_module_dir }}/.driver.created"
+
+    # Generate Postgres Driver Module Descriptor
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Install Generate Postgres Driver Module Descriptor"
+      template:
+        src: "modules/module.xml.j2"
+        dest: "{{ _postgres_driver_module_dir }}/module.xml"
+        owner: "{{ keycloak_os_user }}"
+        group: "{{ keycloak_os_group }}"
+      vars:
+        module_name: "{{ _postgres_driver_module.name }}"
+        module_namespace_version: "{{ _postgres_driver_module.module_namespace_version }}"
+        module_root_resource: "{{ _postgres_driver_module.module_root_resource }}"
+        module_dependencies: "{{ _postgres_driver_module.module_dependencies }}"
+        module_artifacts: []
+        module_properties: []
+        module_main_class: ""
+      notify:
+        - rebuild module ownership
+
+  when:
+    - install_postgres_database_driver|bool

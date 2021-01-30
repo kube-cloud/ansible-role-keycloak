@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# JBOSS HOME
+export JBOSS_HOME={{ keycloak_home_dir }}
+
+# KEYCLOAK HOME
+export KEYCLOAK_HOME={{ keycloak_home_dir }}
+export KC_HOME={{ keycloak_home_dir }}
+
+# KEYCLOAK DATAS
+export KEYCLOAK_DATA={{ keycloak_data_dir }}
+export KC_DATA={{ keycloak_data_dir }}
+
+# KEYCLOAK CONFIGURATION
+export KEYCLOAK_CONF={{ keycloak_config_dir }}
+export KC_CONF={{ keycloak_config_dir }}
+
+# KEYCLOAK LOGS
+export KEYCLOAK_LOG={{ keycloak_log_dir }}
+export KC_LOG={{ keycloak_log_dir }}
+
+# KEYCLOAK TEMP
+export KEYCLOAK_TEMP={{ keycloak_temp_dir }}
+export KC_TEMP={{ keycloak_temp_dir }}
+
+# KEYCLOAK STARTUP
+export KEYCLOAK_STARTUP={{ keycloak_startup_config_dir }}
+export KC_STARTUP={{ keycloak_startup_config_dir }}
+
+# KEYCLOAK MODULES
+export KEYCLOAK_MODULES={{ keycloak_home_dir }}/modules
+export KC_MODULES={{ keycloak_home_dir }}/modules
+
+# KEYCLOAK BIN
+export KEYCLOAK_BIN={{ _keycloak_bin_dir }}
+export KC_BIN={{ _keycloak_bin_dir }}

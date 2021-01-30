@@ -14,16 +14,63 @@
   debug:
    msg: "{{ _java_version }}"
 
-# Extract Java Major and Minor version
-- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Define Java Install Status"
+# Find Keycloak User in Passwd Database
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Find Keycloak OS user in passwd database"
+  getent:
+   database: passwd
+   key: "{{ keycloak_os_user }}"
+   fail_key: false
+
+# Find Keycloak Group in Group Database
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Find Keycloak Owner group in groups database"
+  getent:
+   database: group
+   key: "{{ keycloak_os_group }}"
+   fail_key: false
+
+# Define Commons Facts
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Define Commons Facts"
   set_fact:
+   _temp_dir: "/tmp/keycloak"
    _java_installed: "{{ _java_version.rc == 0 }}"
    _keycloak_download: "{{ keycloak_download | default(_keycloak_downloads[keycloak_version]) }}"
    _mysql_jdbc_download: "{{ mysql_jdbc_download | default(_mysql_jdbc_downloads[mysql_jdbc_version]) }}"
    _postgresql_jdbc_download: "{{ postgresql_jdbc_download | default(_postgresql_jdbc_downloads[postgres_jdbc_version]) }}"
-   _keycloak_downloaded_file_path: "{{ _keycloak_download_dir }}/keycloak-{{ keycloak_version }}.tar.gz"
-   _mysql_jdbc_download_file_path: "{{ _keycloak_download_dir }}/mysql-connector-java-{{ mysql_jdbc_version }}.tar.gz"
+   _keycloak_download_file_path: "{{ _keycloak_download_dir }}/keycloak-{{ keycloak_version }}.tar.gz"
+   _mysql_jdbc_download_file_path: "{{ _keycloak_download_dir }}/mysql-connector-java-{{ mysql_jdbc_version }}.jar"
    _postgresql_jdbc_download_file_path: "{{ _keycloak_download_dir }}/postgresql-{{ postgres_jdbc_version }}.jar"
+   _keycloak_os_user_exists: "{{ getent_passwd[keycloak_os_user] != None }}"
+   _keycloak_os_group_exists: "{{ getent_group[keycloak_os_group] != None }}"
+   _keycloak_mode: "{{ 'standalone' if keycloak_standalone_mode|bool else 'domain' }}"
+   _keycloak_config_file: "{{ 'standalone' if keycloak_standalone_mode|bool else 'domain' }}{{ '-ha' if keycloak_ha_profile|bool else '' }}.xml"
+   _keycloak_startup_properties_file: "{{ keycloak_startup_config_dir }}/keycloak-startup.properties"
+   _keycloak_startup_configuration_file: "{{ keycloak_startup_config_dir }}/keycloak.conf"
+   _keycloak_init_startup_script_file: "{{ keycloak_home_dir }}/docs/contrib/scripts/init.d/wildfly-init-{{ ansible_os_family | lower }}.sh"
+   _keycloak_init_script_link: "{{ initd_dir | regex_replace('\\/$', '') }}/keycloak"
+   _keycloak_init_config_link: "{{ init_config_dir | regex_replace('\\/$', '') }}/keycloak.conf"
+   _keycloak_systemd_service_file: "{{ systemd_dir | regex_replace('\\/$', '') }}/keycloak.service"
+   _keycloak_module_base_path: "{{ keycloak_module_base_path | regex_replace('\\/$', '') }}"
+   _keycloak_bin_dir: "{{ keycloak_home_dir }}/bin"
+   _mysql_driver_module:
+    name: "com.mysql.driver"
+    module_namespace_version: "1.1"
+    module_root_resource: "mysql-connector-java-{{ mysql_jdbc_version }}.jar"
+    module_dependencies:
+     - name: "javax.api"
+     - name: "javax.transaction.api"
+   _postgres_driver_module:
+    name: "org.postgresql"
+    module_namespace_version: "1.1"
+    module_root_resource: "postgresql-{{ postgres_jdbc_version }}.jar"
+    module_dependencies:
+     - name: "javax.api"
+     - name: "javax.transaction.api"
+
+# Define Commons Facts
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Define Commons Facts"
+  set_fact:
+   _mysql_driver_module_dir: "{{ _keycloak_module_base_path }}/{{ _mysql_driver_module.name | regex_replace('\\.', '/') }}/main"
+   _postgres_driver_module_dir: "{{ _keycloak_module_base_path }}/{{ _postgres_driver_module.name | regex_replace('\\.', '/') }}/main"
 
 # Extract Java Major and Minor version
 - name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Extract Java Major and Minor version"
@@ -31,3 +78,82 @@
    _java_version_major: "{{ _java_version.stderr_lines[0].split(' ')[2].split('.')[0] | regex_replace('^\"', '') }}"
   when:
    - _java_installed|bool
+
+# Ensure Keycloak OS Group exists
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Ensure that Keycloak OS group [ {{ keycloak_os_group }} ] exists"
+  group:
+   name: "{{ keycloak_os_group }}"
+   system: "{{ keycloak_os_owner_system|bool }}"
+   state: present
+  tags: keycloak
+  when:
+   - not _keycloak_os_group_exists|bool
+
+# Ensure Keycloak OS User exists
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Ensure that Keycloak OS user [ {{ keycloak_os_user }} ] exists"
+  user:
+   name: "{{ keycloak_os_user }}"
+   group: "{{ keycloak_os_group }}"
+   system: "{{ keycloak_os_owner_system|bool }}"
+   create_home: "{{ keycloak_os_create_home|bool }}"
+   home: "{{ keycloak_install_dir }}"
+   shell: "{{ keycloak_os_shell }}"
+   state: present
+  tags: keycloak
+  when:
+   - not _keycloak_os_user_exists|bool
+
+# Prepare all necessary directories
+- name: "({{ ansible_distribution }}) KEYCLOAK::Initialize - Prepare All Necessary Directories"
+  file:
+   dest: "{{ item.dest }}"
+   owner: "{{ item.owner }}"
+   group: "{{ item.group }}"
+   mode: "{{ item.mode }}"
+   state: "directory"
+  loop:
+   - dest: "{{ _keycloak_download_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ keycloak_install_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ keycloak_home_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ keycloak_data_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ keycloak_log_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ keycloak_config_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ keycloak_temp_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ keycloak_startup_config_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ _mysql_driver_module_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ _postgres_driver_module_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0755"
+   - dest: "{{ _temp_dir }}"
+     owner: "{{ keycloak_os_user }}"
+     group: "{{ keycloak_os_group }}"
+     mode: "0777"
+  tags: keycloak

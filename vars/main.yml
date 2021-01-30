@@ -21,11 +21,11 @@ _keycloak_downloads:
 # MySQL Remote URL MAP
 _mysql_jdbc_downloads:
   8.0:
-    url: "https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-java-8.0.22.tar.gz"
-    checksum: "MD5:eb4e915366543844a80a06ea111ec6f7"
+    url: "https://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/8.0.23/mysql-connector-java-8.0.23.jar"
+    checksum: "sha1:14D64AC509ADCCAFF444513C12646D93E4ED8BE8"
   5.1:
-    url: "https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-java-5.1.48.tar.gz"
-    checksum: "MD5:9e6eee4e6df8d3474622bed952513fe5"
+    url: "https://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar"
+    checksum: "sha1:CF76D2E4C9C3782A85C15C87BEC5772B34FFD0E5"
 
 # PostgreSql Remote URL MAP
 _postgresql_jdbc_downloads:

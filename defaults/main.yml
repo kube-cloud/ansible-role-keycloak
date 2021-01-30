@@ -3,26 +3,130 @@
 # Keycloak Version
 keycloak_version: 12.0
 
+# Keycloak Standalone Mode
+keycloak_standalone_mode: true
+
+# Keycloak Profile (nothing, ha)
+keycloak_ha_profile: true
+
 # Keycloak Download
 keycloak_download: "{{ _keycloak_downloads[keycloak_version] }}"
 
 # Keycloak Installation Directory
 keycloak_install_dir: /opt/keycloak
 
+# Keycloak Mode Subdir
+keycloak_mode_dir: "{{ 'standalone' if keycloak_standalone_mode|bool else 'domain' }}"
+
 # Keycloak Home Dir
 keycloak_home_dir: "{{ keycloak_install_dir }}/keycloak-{{ keycloak_version }}"
 
 # Keycloak Data dir
-keycloak_data_dir: "{{ keycloak_home_dir }}/data"
+keycloak_data_dir: "{{ keycloak_home_dir }}/{{ keycloak_mode_dir }}/data"
 
 # Keycloak Log dir
-keycloak_log_dir: "{{ keycloak_home_dir }}/logs"
+keycloak_log_dir: "{{ keycloak_home_dir }}/{{ keycloak_mode_dir }}/logs"
 
 # Keycloak Config dir
-keycloak_config_dir: "{{ keycloak_home_dir }}/conf"
+keycloak_config_dir: "{{ keycloak_home_dir }}/{{ keycloak_mode_dir }}/configuration"
+
+# Keycloak Temp dir
+keycloak_temp_dir: "{{ keycloak_home_dir }}/{{ keycloak_mode_dir }}/tmp"
+
+# Keycloak Data dir
+keycloak_startup_config_dir: "{{ keycloak_home_dir }}/{{ keycloak_mode_dir }}/startup"
+
+# Keycloak Node Name
+keycloak_node_name: "keycloak"
+
+# Module Base Path
+keycloak_module_base_path: "{{ keycloak_home_dir }}/modules/system/layers/base"
+
+# Install Database Driver
+install_mysql_database_driver: true
 
 # Mysql driver version
 mysql_jdbc_version: 8.0
 
+# MySQL XA JDBC Datasource Class
+mysql_jdbc_xa_datasource: "com.mysql.cj.jdbc.MysqlXADataSource"
+
+# Install Postgres Database Driver
+install_postgres_database_driver: true
+
 # Postgre SQL driver version
 postgres_jdbc_version: 42.2
+
+# Postgres XA JDBC Datasource Class
+postgres_jdbc_xa_datasource: "org.postgresql.xa.PGXADataSource"
+
+# Keycloak Datasource Name
+keycloak_datasource_name: "KeycloakDS"
+
+# Datasource Connection
+keycloak_datasource_connection:
+  url: "jdbc:h2:${jboss.server.data.dir}/keycloak;AUTO_SERVER=TRUE"
+  username: "sa"
+  password: "sa"
+
+# Datasource Pool
+keycloak_datasource_pool:
+  prefill: true
+  initial_size: 20
+  min_size: 15
+  max_size: 50
+  valid_connection_sql: "SELECT 1"
+  valid_on_match: true
+  idle_timeout_minute: 2
+
+# Keycloak OS User
+keycloak_os_user: keycloak
+
+# Keycloak OS Group
+keycloak_os_group: keycloak
+
+# Keycloak OS User Shell
+keycloak_os_shell: "/usr/sbin/nologin"
+
+# Keycloak OS User Create Home
+keycloak_os_create_home: true
+
+# Keycloak OS User System
+keycloak_os_owner_system: true
+
+# Keycloak Admin User
+keycloak_admin_user: admin
+
+# Keycloak Admin Password
+keycloak_admin_password: admin123
+
+# Wildfly Startup Wait
+keycloak_startup_wait: 120
+
+# Wildfly Startup Wait
+keycloak_shutdown_wait: 120
+
+# Keycloak Bind Address
+keycloak_bind_address: "0.0.0.0"
+keycloak_management_bind_address: "0.0.0.0"
+keycloak_bind_address_unsecure: ""
+keycloak_messaging_group_address: ""
+
+# Keycloak Management Bind Port
+keycloak_manage_http_port: 9990
+keycloak_manage_https_port: 9993
+keycloak_http_port: 8080
+keycloak_https_port: 8443
+
+# Keycloak CLI Timeout
+keycloak_cli_timeout: 120000
+
+# Additionnal Properties
+keycloak_custom_properties: []
+
+# Initd Dir
+initd_dir: "/etc/init.d"
+init_config_dir: "/etc/default"
+
+# systemd Dir
+systemd_dir: /usr/lib/systemd/system

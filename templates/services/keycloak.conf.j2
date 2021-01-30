@@ -1,0 +1,37 @@
+#################################################
+# General configuration for the init.d scripts, #
+# not necessarily for WildFly itself.           #
+# default location: /etc/default/wildfly        #
+#################################################
+
+# Location of WildFly
+JBOSS_HOME="{{ keycloak_home_dir }}"
+
+# The username who should own the process.
+JBOSS_USER="{{ keycloak_os_user }}"
+
+# The mode WildFly should start, standalone or domain
+JBOSS_MODE={{ _keycloak_mode }}
+
+# Configuration for standalone mode
+JBOSS_CONFIG={{ _keycloak_config_file }}
+
+{% if not keycloak_standalone_mode|bool %}
+# Configuration for domain mode
+JBOSS_HOST_CONFIG=host-master.xml
+{% endif %}
+
+# The amount of time to wait for startup
+STARTUP_WAIT={{ keycloak_startup_wait }}
+
+# The amount of time to wait for shutdown
+SHUTDOWN_WAIT={{ keycloak_shutdown_wait }}
+
+# Console Log file
+JBOSS_CONSOLE_LOG="{{ keycloak_log_dir }}/console.log"
+
+# Log Dir
+JBOSS_LOG_DIR="{{ keycloak_log_dir }}"
+
+## Additionnal Startup Properties
+JBOSS_OPTS="-P={{ _keycloak_startup_properties_file }}"

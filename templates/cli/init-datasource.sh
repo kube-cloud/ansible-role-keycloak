@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Activate log
+set -e
+
+# Delete Already exists JDBC Driver
+sh {{ _keycloak_bin_dir }}/jboss-cli.sh --connect --controller=localhost:{{ keycloak_manage_http_port }} \
+--timeout={{ keycloak_cli_timeout }} --user={{ keycloak_admin_user }} --password={{ keycloak_admin_password }} \
+--commands="/subsystem=datasources/jdbc-driver={{ datasource.name }}:remove()" || true
+
+# Create JDBC Driver
+sh {{ _keycloak_bin_dir }}/jboss-cli.sh --connect --controller=localhost:{{ keycloak_manage_http_port }} \
+--timeout={{ keycloak_cli_timeout }} --user={{ keycloak_admin_user }} --password={{ keycloak_admin_password }} \
+--commands="/subsystem=datasources/jdbc-driver={{ datasource.driver_name }}:add(driver-name={{ datasource.driver_name }},driver-module-name={{ datasource.driver_module }},driver-xa-datasource-class-name={{ datasource.driver_jdbc_xa_datasource }})"
+
+# Delete Already Exists Datasource
+sh {{ _keycloak_bin_dir }}/jboss-cli.sh --connect --controller=localhost:{{ keycloak_manage_http_port }} \
+--timeout={{ keycloak_cli_timeout }} --user={{ keycloak_admin_user }} --password={{ keycloak_admin_password }} \
+--commands="data-source remove --name={{ datasource.name }} --headers={rollback-on-runtime-failure=false}" || true
+
+# Create Datasource
+sh {{ _keycloak_bin_dir }}/jboss-cli.sh --connect --controller=localhost:{{ keycloak_manage_http_port }} \
+--timeout={{ keycloak_cli_timeout }} --user={{ keycloak_admin_user }} --password={{ keycloak_admin_password }} \
+--commands="data-source add --name={{ datasource.name }} --enabled=true --jndi-name=java:jboss/datasources/{{ datasource.name }} --driver-name={{ datasource.driver }} --connection-url={{ datasource.connection.url }} --user-name={{ datasource.connection.username }} --password={{ datasource.connection.password | default('') }} --pool-prefill={{ (datasource.pool.prefill | default('true'))|lower }} --initial-pool-size={{ datasource.pool.initial_size | default(20) }} --min-pool-size={{ datasource.pool.min_size | default(10) }} --max-pool-size={{ datasource.pool.max_size | default(30) }} --check-valid-connection-sql=\"{{ datasource.pool.valid_connection_sql | default('SELECT 1') }}\" --validate-on-match={{ (datasource.pool.valid_on_match | default(true))|lower }} --idle-timeout-minutes={{ datasource.pool.idle_timeout_minute | default(5) }}"
+
+# Update Keycloak Server JPA Connection Provider datasource
+sh {{ _keycloak_bin_dir }}/jboss-cli.sh --connect --controller=localhost:{{ keycloak_manage_http_port }} \
+--timeout={{ keycloak_cli_timeout }} --user={{ keycloak_admin_user }} --password={{ keycloak_admin_password }} \
+--commands="/subsystem=keycloak-server/spi=connectionsJpa/provider=default/:map-put(name=properties,key=dataSource,value=java:jboss/datasources/{{ datasource.name }})"
+
+# reload
+sh {{ _keycloak_bin_dir }}/jboss-cli.sh --connect --controller=localhost:{{ keycloak_manage_http_port }} \
+--timeout={{ keycloak_cli_timeout }} --user={{ keycloak_admin_user }} --password={{ keycloak_admin_password }} \
+--commands="reload"

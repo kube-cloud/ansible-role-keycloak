@@ -1,0 +1,25 @@
+# System properties for wildfly
+jboss.server.data.dir={{ keycloak_data_dir }}
+jboss.server.log.dir={{ keycloak_log_dir }}
+jboss.server.config.dir={{ keycloak_config_dir }}
+jboss.bind.address={{ keycloak_bind_address }}
+jboss.management.http.port={{ keycloak_manage_http_port }}
+jboss.management.https.port={{ keycloak_manage_https_port }}
+jboss.http.port={{ keycloak_http_port }}
+jboss.https.port={{ keycloak_https_port }}
+jboss.bind.address.management={{ keycloak_management_bind_address }}
+jboss.server.temp.dir={{ keycloak_temp_dir }}
+jboss.boot.log.file={{ keycloak_log_dir }}/boot.log
+jboss.server.log.dir={{ keycloak_log_dir }}
+{% if keycloak_node_name %}
+jboss.node.name={{ keycloak_node_name }}
+{% endif %}
+{% if keycloak_bind_address_unsecure %}
+jboss.bind.address.unsecure={{ keycloak_bind_address_unsecure }}
+{% endif %}
+{% if keycloak_messaging_group_address %}
+jboss.messaging.group.address={{ keycloak_messaging_group_address }}
+{% endif %}
+{% for custom_property in keycloak_custom_properties | default([]) %}
+{{ custom_property.key }}={{ custom_property.value }}
+{% endfor %}

@@ -2,27 +2,61 @@
 
 # Handler execution order is related to handler file declaration (not task fired order)
 
-# Daemon reload handler
-- name: systemctl daemon-reload
-  systemd:
-   daemon_reload: true
-  changed_when: false
-  ignore_errors: true
+# Rebuild Home Dir Ownership
+- name: rebuild home ownership
+  file:
+   path: "{{ keycloak_home_dir }}"
+   owner: "{{ keycloak_os_user }}"
+   group: "{{ keycloak_os_group }}"
+   recurse: true
+   mode: "0750"
+   state: "directory"
 
-# Enable Docker handler
-- name: docker enable
-  service:
-   name: docker
-   enabled: true
+# Rebuild Module Dir Ownership
+- name: rebuild module ownership
+  file:
+   path: "{{ _keycloak_module_base_path }}"
+   owner: "{{ keycloak_os_user }}"
+   group: "{{ keycloak_os_group }}"
+   recurse: true
+   mode: "0750"
+   state: "directory"
 
-# Start Docker handler
-- name: docker start
-  service:
-   name: docker
-   state: started
+# Rebuild Data Dir Ownership
+- name: rebuild data ownership
+  file:
+   path: "{{ keycloak_data_dir }}"
+   owner: "{{ keycloak_os_user }}"
+   group: "{{ keycloak_os_group }}"
+   recurse: true
+   mode: "0750"
+   state: "directory"
 
-# Restart Docker handler
-- name: docker restart
+# Rebuild Log Dir Ownership
+- name: rebuild log ownership
+  file:
+   path: "{{ keycloak_log_dir }}"
+   owner: "{{ keycloak_os_user }}"
+   group: "{{ keycloak_os_group }}"
+   recurse: true
+   mode: "0750"
+   state: "directory"
+
+# Rebuild Config Dir Ownership
+- name: rebuild config ownership
+  file:
+   path: "{{ keycloak_config_dir }}"
+   owner: "{{ keycloak_os_user }}"
+   group: "{{ keycloak_os_group }}"
+   recurse: true
+   mode: "0750"
+   state: "directory"
+
+# Restart Keycloak Service
+- name: restart keycloak
   service:
-   name: docker
+   name: keycloak
    state: restarted
+
+# Flush All Handlers
+- meta: flush_handlers

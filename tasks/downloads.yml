@@ -1,13 +1,24 @@
 ---
 
-# Download Keycloak/JDBC Connetors Binaries
-- name: "({{ ansible_distribution }}) KEYCLOAK::Downloads - Keycloak/JDBC Connectors Binaries"
+# Download Keycloak Binaries
+- name: "({{ ansible_distribution }}) KEYCLOAK::Downloads - Keycloak Binaries"
   get_url:
-   url: "{{ item.url }}"
-   dest: "{{ _keycloak_downloaded_file_path }}"
-   checksum: "{{ item.checksum }}"
-  loop:
-   - "{{ _keycloak_downloaded }}"
-   - "{{ _mysql_jdbc_download }}"
-   - "{{ _postgresql_jdbc_download }}"
+   url: "{{ _keycloak_download.url }}"
+   dest: "{{ _keycloak_download_file_path }}"
+   checksum: "{{ _keycloak_download.checksum }}"
 
+# Download MySQL JDBC Connetors Binaries
+- name: "({{ ansible_distribution }}) KEYCLOAK::Downloads - MySQL JDBC Connectors Binaries"
+  get_url:
+   url: "{{ _mysql_jdbc_download.url }}"
+   dest: "{{ _mysql_jdbc_download_file_path }}"
+   checksum: "{{ _mysql_jdbc_download.checksum }}"
+  when: install_mysql_database_driver|bool
+
+# Download Postgres JDBC Connetors Binaries
+- name: "({{ ansible_distribution }}) KEYCLOAK::Downloads - Postgres JDBC Connectors Binaries"
+  get_url:
+   url: "{{ _postgresql_jdbc_download.url }}"
+   dest: "{{ _postgresql_jdbc_download_file_path }}"
+   checksum: "{{ _postgresql_jdbc_download.checksum }}"
+  when: install_postgres_database_driver|bool

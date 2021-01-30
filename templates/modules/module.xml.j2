@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<module name="{{ module_name }}" {% if module_version is defined and module_version|trim != '' %}version="{{ module_version }}"{% endif %} xmlns="urn:jboss:module:{{ module_namespace_version }}" {% if module_slot is defined and module_slot|trim != '' %}slot="{{ module_slot }}"{% endif %}>
+    {% if module_dependencies is defined and module_dependencies|length > 0 %}
+    <dependencies>
+        {% for module_dependency in module_dependencies %}
+        <module name="{{ module_dependency.name }}" {% if module_dependency.export is defined and module_dependency.export|trim != '' %}export="{{ module_dependency.export|lower }}"{% endif %} {% if module_dependency.slot is defined and module_dependency.slot|trim != '' %}slot="{{ module_dependency.slot }}"{% endif %} />
+        {% endfor %}
+    </dependencies>
+    {% endif %}
+    <resources>
+        <resource-root path="{{ module_root_resource }}" />
+        {% for module_artifact in module_artifacts | default([]) %}
+        <artifact name="{{ module_artifact }}" />
+        {% endfor %}
+    </resources>
+    {% if module_main_class is defined and module_main_class|trim != '' %}
+    <main-class name="{{ module_main_class }}"/>
+    {% endif %}
+    {% if module_properties is defined and module_properties|length > 0 %}
+    <properties>
+        {% for module_property in module_properties %}
+        <property name="{{ module_property.name }}" name="{{ module_property.value }}" />
+        {% endfor %}
+    </properties>
+    {% endif %}
+</module>
+
+

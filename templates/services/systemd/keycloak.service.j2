@@ -1,0 +1,13 @@
+[Unit]
+Description=Keycloak Server Instance Node
+After=network.target
+
+[Service]
+Type=simple
+User={{ keycloak_os_user }}
+Group={{ keycloak_os_group }}
+EnvironmentFile={{ _keycloak_startup_configuration_file }}
+ExecStart={{ keycloak_home_dir }}/bin/standalone.sh $JBOSS_OPTS
+
+[Install]
+WantedBy=multi-user.target

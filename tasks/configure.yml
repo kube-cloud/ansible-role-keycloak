@@ -1,0 +1,30 @@
+---
+
+# Configure MySQL Driver Block
+- name: "({{ ansible_distribution }}) KEYCLOAK::Configure MySQL Driver Block"
+  block:
+
+    # Configure MySQL Datasource
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Configure MySQL Datasource"
+      command: >
+        sh {{ _keycloak_bin_dir }}/jboss-cli.sh --connect --controller=localhost:{{ keycloak_manage_http_port }} \
+        --timeout={{ keycloak_cli_timeout }} --user={{ keycloak_admin_user }} --password={{ keycloak_admin_password }} \
+        --commands=/subsystem=datasources/jdbc-driver={{ _mysql_driver_module.name }}:add(driver-name={{ _mysql_driver_module.name }},\
+        driver-module-name={{ _mysql_driver_module.name }},driver-xa-datasource-class-name={{ mysql_jdbc_xa_datasource }})
+
+  when:
+    - install_mysql_database_driver|bool
+
+# Configure Postgres Driver Block
+- name: "({{ ansible_distribution }}) KEYCLOAK::Configure Postgres Driver Block"
+  block:
+
+    # Configure Postgres Driver
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Configure Postgres Driver"
+      command: >
+        sh {{ _keycloak_bin_dir }}/jboss-cli.sh --connect --controller=localhost:{{ keycloak_manage_http_port }} \
+        --timeout={{ keycloak_cli_timeout }} --user={{ keycloak_admin_user }} --password={{ keycloak_admin_password }} \
+        --commands=/subsystem=datasources/jdbc-driver={{ _postgres_driver_module.name }}:add(driver-name={{ _postgres_driver_module.name }},\
+        driver-module-name={{ _postgres_driver_module.name }},driver-xa-datasource-class-name={{ postgres_jdbc_xa_datasource }})
+  when:
+    - install_postgres_database_driver|bool

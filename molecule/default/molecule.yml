@@ -13,12 +13,17 @@ lint:
         config-file: .yamllint
 platforms:
     - name: ${MOLECULE_NAME:-bionic}
-      image: "${MOLECULE_DISTRO:-kubecloudsas/docker-ansible-test:v1.1.0-xenial-py3}"
+      image: "${MOLECULE_DISTRO:-kubecloudsas/docker-ansible-test:v1.1.0-centos7-py3}"
       command: ${MOLECULE_DOCKER_COMMAND:-""}
       volumes:
           - /sys/fs/cgroup:/sys/fs/cgroup:ro
       privileged: true
       pre_build_image: true
+      published_ports:
+          - 0.0.0.0:8080:8080/tcp
+          - 0.0.0.0:8443:8443/tcp
+          - 0.0.0.0:9990:9990/tcp
+          - 0.0.0.0:9993:9993/tcp
 
 provisioner:
     name: ansible

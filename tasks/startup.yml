@@ -1,0 +1,72 @@
+---
+
+# Generate Keycloak Startup Properties
+- name: "({{ ansible_distribution }}) KEYCLOAK::Startup - Generate Keycloak Startup Properties"
+  template:
+    src: services/keycloak-startup.properties.j2
+    dest: "{{ _keycloak_startup_properties_file }}"
+    owner: "{{ keycloak_os_user }}"
+    group: "{{ keycloak_os_group }}"
+
+# Generate Keycloak Conf file
+- name: "({{ ansible_distribution }}) KEYCLOAK::Startup - Generate Keycloak Conf Properties"
+  template:
+    src: services/keycloak.conf.j2
+    dest: "{{ _keycloak_startup_configuration_file }}"
+    owner: "{{ keycloak_os_user }}"
+    group: "{{ keycloak_os_group }}"
+  notify:
+    - rebuild data ownership
+    - rebuild config ownership
+
+# Generate initd/upstart configuration link
+- name: "({{ ansible_distribution }}) KEYCLOAK::Startup - Generate initd/upstart configuration link"
+  file:
+    src: "{{ _keycloak_startup_configuration_file }}"
+    dest: "{{ _keycloak_init_config_link }}"
+    state: link
+
+# Generate initd/upstart startup script link
+- name: "({{ ansible_distribution }}) KEYCLOAK::Startup - Generate initd/upstart startup script link"
+  file:
+    src: "{{ _keycloak_init_startup_script_file }}"
+    dest: "{{ _keycloak_init_script_link }}"
+    state: link
+  notify:
+    - restart keycloak
+  when:
+    - ansible_service_mgr in ['init', 'upstart']
+
+# Systemd Service Manager Block
+- block:
+
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Startup - Generate Keycloak Service Descriptor"
+      template:
+        src: services/systemd/keycloak.service.j2
+        dest: "{{ _keycloak_systemd_service_file }}"
+        owner: "{{ keycloak_os_user }}"
+        group: "{{ keycloak_os_group }}"
+      notify:
+        - restart keycloak
+
+    # Reload SystemD
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Startup - Systemd Daemon reload"
+      systemd:
+        daemon_reload: true
+
+  when:
+    - ansible_service_mgr == 'systemd'
+
+# Flush All Handlers
+- meta: flush_handlers
+
+# Wait for Keycloak started
+- name: "({{ ansible_distribution }}) KEYCLOAK::Startup - Wait for Keycloak started"
+  wait_for:
+    host: "localhost"
+    port: "{{ keycloak_manage_http_port }}"
+    delay: 2
+    connect_timeout: 2
+    sleep: 2
+    timeout: 60
+    state: started
