@@ -3,6 +3,16 @@
 - name: Converge
   hosts: all
   roles:
+   - role: jetune.mysql
+     vars:
+      mysql_users:
+       - name: keycloak
+         password: keycloak
+         host: localhost
+         priv: "keycloak.*:ALL"
+      mysql_databases:
+       - name: keycloak
+         encoding: utf8
    - role: jetune.java
      vars:
       from_repo: false
@@ -15,5 +25,12 @@
       checksum: sha256:7a6bb980b9c91c478421f865087ad2d69086a0583aeeb9e69204785e8e97dcfd
       alternative_priority: 300
       is_default: true
-
    - role: ansible-role-keycloak
+     vars:
+      install_mysql_database_driver: true
+      mysql_jdbc_version: 5.1
+      mysql_jdbc_xa_datasource: "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
+      keycloak_datasource_connection:
+       url: "jdbc:mysql://localhost:3306/keycloak"
+       username: "keycloak"
+       password: "keycloak"

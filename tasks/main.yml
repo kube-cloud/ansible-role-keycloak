@@ -37,10 +37,6 @@
 - name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Install Tasks"
   include_tasks: "install.yml"
 
-  # Include Secure Tasks (Linux)
-- name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Secure Tasks"
-  include_tasks: "secure.yml"
-
 # Include Startup Tasks (Linux)
 - name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Startup Tasks"
   include_tasks: "startup.yml"
@@ -48,3 +44,7 @@
 # Include Configure Tasks (Linux)
 - name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Configure Tasks"
   include_tasks: "configure.yml"
+
+  # Include Secure Tasks (Linux)
+- name: "({{ ansible_distribution }}) KEYCLOAK::Main - Include Secure Tasks"
+  include_tasks: "secure.yml"

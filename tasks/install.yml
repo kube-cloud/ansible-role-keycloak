@@ -84,3 +84,13 @@
 
   when:
     - install_postgres_database_driver|bool
+
+# Create Wildfly Management Admin User for Standalone Mode
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install - Create Wildfly Admin user for Standalone Mode"
+  shell: >
+   {{ keycloak_home_dir }}/bin/add-user.sh -u {{ wildfly_admin_user }} -p {{ wildfly_admin_password }} &&
+   touch {{ keycloak_home_dir }}/.mgmt-users.{{ keycloak_admin_user }}.created
+  args:
+   creates: "{{ keycloak_home_dir }}/.mgmt-users.{{ keycloak_admin_user }}.created"
+  when:
+   - keycloak_standalone_mode|bool
