@@ -5,7 +5,7 @@ import testinfra.utils.ansible_runner
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
-
+# Test Java is Installed
 def test_java_installed(host):
 
     # Java expected version major
@@ -23,20 +23,8 @@ def test_java_installed(host):
     # Java Home Path
     java_home_path = '/usr/lib/jvm/java-{}-openjdk'.format(java_version)
 
-    # Java archive file
-    java_archive_path = '/tmp/openjdk-{}.tar.gz'.format(java_version)
-
     # Java Home Dirctory
     java_home = host.file(java_home_path)
-
-    # Java Downloaded file
-    java_archive = host.file(java_archive_path)
-
-    # Check that Java Archive exists
-    assert java_archive.exists
-
-    # Check that Java Archive is File
-    assert java_archive.is_file
 
     # Check that Java Home exists
     assert java_home.exists
@@ -74,3 +62,28 @@ def test_java_installed(host):
 
     # Assert that version is Java implementation is OpenJDK
     assert java_impl_ext == java_impl
+
+# Test MySQL is Installed
+def test_mysql_installed(host):
+
+    # Get MySQL service handler
+    service = host.service('mariadb')
+
+    # Check that service is enabled
+    service.is_enabled is True
+
+    # Check that service is started
+    assert service.is_running is True
+
+# Test Keycloak is Installed
+def test_keycloak_installed(host):
+
+    # Get keycloak service handler
+    service = host.service('keycloak')
+
+    # Check that service is enabled
+    service.is_enabled is True
+
+    # Check that service is started
+    assert service.is_running is True
+

@@ -6,6 +6,20 @@
    {{ keycloak_home_dir }}/bin/add-user-keycloak.sh -r master -u {{ keycloak_admin_user }} -p {{ keycloak_admin_password }} &&
    touch {{ keycloak_home_dir }}/.mgmt-users-keycloak.{{ keycloak_admin_user }}.created
   args:
-   creates: "{{ keycloak_home_dir }}/.mgmt-users-keycloak.{{ keycloak_admin_user }}.created"
+    creates: "{{ keycloak_home_dir }}/.mgmt-users-keycloak.{{ keycloak_admin_user }}.created"
   when:
-   - keycloak_standalone_mode|bool
+    - keycloak_standalone_mode|bool
+  notify:
+    - restart keycloak
+  ignore_errors: true
+
+# Wait for Keycloak started
+- name: "({{ ansible_distribution }}) KEYCLOAK::Secure - Wait for Keycloak started"
+  wait_for:
+    host: "localhost"
+    port: "{{ keycloak_manage_http_port }}"
+    delay: 2
+    connect_timeout: 2
+    sleep: 2
+    timeout: 120
+    state: started

@@ -68,5 +68,5 @@
     delay: 2
     connect_timeout: 2
     sleep: 2
-    timeout: 60
+    timeout: 120
     state: started

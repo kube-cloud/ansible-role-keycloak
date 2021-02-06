@@ -61,16 +61,16 @@ postgres_jdbc_xa_datasource: "org.postgresql.xa.PGXADataSource"
 h2_jdbc_version: 1.4
 
 # H2 XA JDBC Datasource Class
-postgres_jdbc_xa_datasource: "org.h2.jdbcx.JdbcXAConnection"
+h2_jdbc_xa_datasource: "org.h2.jdbcx.JdbcDataSource"
 
 # Keycloak Datasource Name
 keycloak_datasource_name: "KeycloakDS"
 
 # Datasource Connection
 keycloak_datasource_connection:
-  url: "jdbc:h2:${jboss.server.data.dir}/keycloak;AUTO_SERVER=TRUE"
-  username: "sa"
-  password: "sa"
+  url: "jdbc:mysql://localhost:3306/keycloak"
+  username: "keycloak"
+  password: "keycloak"
 
 # Datasource Pool
 keycloak_datasource_pool:
@@ -96,6 +96,12 @@ keycloak_os_create_home: true
 
 # Keycloak OS User System
 keycloak_os_owner_system: true
+
+# Keycloak Admin User
+wildfly_admin_user: keycloak
+
+# Keycloak Admin Password
+wildfly_admin_password: keycloak123
 
 # Keycloak Admin User
 keycloak_admin_user: admin

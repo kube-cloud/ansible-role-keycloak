@@ -22,6 +22,7 @@ platforms:
           - 0.0.0.0:8443:8443/tcp
           - 0.0.0.0:9990:9990/tcp
           - 0.0.0.0:9993:9993/tcp
+          - 0.0.0.0:3306:3306/tcp
 
 provisioner:
     name: ansible
@@ -34,7 +35,7 @@ provisioner:
     playbooks:
         converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 scenario:
-    name: default
+    name: keycloakmysqljdk11
     test_sequence:
         - lint
         - dependency

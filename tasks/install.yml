@@ -20,7 +20,7 @@
     mode: a+x
 
 # Install MySQL Driver Module if Needed
-- name: "({{ ansible_distribution }}) KEYCLOAK::Install Install MySQL Driver Block If Needed"
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install MySQL Driver Block If Needed"
   block:
 
     # Copy MySQL Driver To Keycloak Module Location
@@ -53,7 +53,7 @@
     - _mysql_datasource|bool
 
 # Install Postgres Driver Module if Needed
-- name: "({{ ansible_distribution }}) KEYCLOAK::Install Install Postgres Driver Block If Needed"
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install Postgres Driver Block If Needed"
   block:
 
     # Copy Postgres Driver To Keycloak Module Location
@@ -86,7 +86,7 @@
     - _postgres_datasource|bool
 
 # Install H2 Driver Module if Needed
-- name: "({{ ansible_distribution }}) KEYCLOAK::Install Install H2 Driver Block If Needed"
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install H2 Driver Block If Needed"
   block:
 
     # Copy H2 Driver To Keycloak Module Location
@@ -121,9 +121,9 @@
 # Create Wildfly Management Admin User for Standalone Mode
 - name: "({{ ansible_distribution }}) KEYCLOAK::Install - Create Wildfly Admin user for Standalone Mode"
   shell: >
-   {{ keycloak_home_dir }}/bin/add-user.sh -u {{ keycloak_admin_user }} -p {{ keycloak_admin_password }} &&
-   touch {{ keycloak_home_dir }}/.mgmt-users.{{ keycloak_admin_user }}.created
+   {{ keycloak_home_dir }}/bin/add-user.sh -u {{ wildfly_admin_user }} -p {{ wildfly_admin_password }} &&
+   touch {{ keycloak_home_dir }}/.mgmt-users.{{ wildfly_admin_user }}.created
   args:
-   creates: "{{ keycloak_home_dir }}/.mgmt-users.{{ keycloak_admin_user }}.created"
+    creates: "{{ keycloak_home_dir }}/.mgmt-users.{{ wildfly_admin_user }}.created"
   when:
-   - keycloak_standalone_mode|bool
+    - keycloak_standalone_mode|bool
