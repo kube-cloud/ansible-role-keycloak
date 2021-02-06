@@ -7,10 +7,8 @@ dependency:
         ignore-errors: true
 driver:
     name: docker
-lint:
-    name: yamllint
-    options:
-        config-file: .yamllint
+lint: |
+    yamllint .
 platforms:
     - name: ${MOLECULE_NAME:-bionic}
       image: "${MOLECULE_DISTRO:-kubecloudsas/docker-ansible-test:v1.1.0-centos7-py3}"

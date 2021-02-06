@@ -41,3 +41,9 @@ _postgresql_jdbc_downloads:
   9.4:
     url: "https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar"
     checksum: "sha1:38931D70811D9BFCECF9C06F7222973C038A12DE"
+
+# H2 Remote URL MAP
+_h2_jdbc_downloads:
+  1.4:
+    url: "https://search.maven.org/remotecontent?filepath=com/h2database/h2/1.4.200/h2-1.4.200.jar"
+    checksum: "sha1:f7533fe7cb8e99c87a43d325a77b4b678ad9031a"

@@ -42,8 +42,8 @@ keycloak_node_name: "keycloak"
 # Module Base Path
 keycloak_module_base_path: "{{ keycloak_home_dir }}/modules/system/layers/base"
 
-# Install Database Driver
-install_mysql_database_driver: true
+# Install Database Driver (MYSQL, POSTGRES, H2)
+keycloak_database: "MYSQL"
 
 # Mysql driver version
 mysql_jdbc_version: 8.0
@@ -51,14 +51,17 @@ mysql_jdbc_version: 8.0
 # MySQL XA JDBC Datasource Class
 mysql_jdbc_xa_datasource: "com.mysql.cj.jdbc.MysqlXADataSource"
 
-# Install Postgres Database Driver
-install_postgres_database_driver: true
-
 # Postgre SQL driver version
 postgres_jdbc_version: 42.2
 
 # Postgres XA JDBC Datasource Class
 postgres_jdbc_xa_datasource: "org.postgresql.xa.PGXADataSource"
+
+# H2 SQL driver version
+h2_jdbc_version: 1.4
+
+# H2 XA JDBC Datasource Class
+postgres_jdbc_xa_datasource: "org.h2.jdbcx.JdbcXAConnection"
 
 # Keycloak Datasource Name
 keycloak_datasource_name: "KeycloakDS"

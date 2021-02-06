@@ -13,7 +13,7 @@
    url: "{{ _mysql_jdbc_download.url }}"
    dest: "{{ _mysql_jdbc_download_file_path }}"
    checksum: "{{ _mysql_jdbc_download.checksum }}"
-  when: install_mysql_database_driver|bool
+  when: _mysql_datasource|bool
 
 # Download Postgres JDBC Connetors Binaries
 - name: "({{ ansible_distribution }}) KEYCLOAK::Downloads - Postgres JDBC Connectors Binaries"
@@ -21,4 +21,12 @@
    url: "{{ _postgresql_jdbc_download.url }}"
    dest: "{{ _postgresql_jdbc_download_file_path }}"
    checksum: "{{ _postgresql_jdbc_download.checksum }}"
-  when: install_postgres_database_driver|bool
+  when: _postgres_datasource|bool
+
+# Download H2 JDBC Connetors Binaries
+- name: "({{ ansible_distribution }}) KEYCLOAK::Downloads - H2 JDBC Connectors Binaries"
+  get_url:
+   url: "{{ _h2_jdbc_download.url }}"
+   dest: "{{ _h2_jdbc_download_file_path }}"
+   checksum: "{{ _h2_jdbc_download.checksum }}"
+  when: _h2_datasource|bool

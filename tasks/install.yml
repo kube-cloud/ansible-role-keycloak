@@ -50,7 +50,7 @@
         - rebuild module ownership
 
   when:
-    - install_mysql_database_driver|bool
+    - _mysql_datasource|bool
 
 # Install Postgres Driver Module if Needed
 - name: "({{ ansible_distribution }}) KEYCLOAK::Install Install Postgres Driver Block If Needed"
@@ -83,4 +83,47 @@
         - rebuild module ownership
 
   when:
-    - install_postgres_database_driver|bool
+    - _postgres_datasource|bool
+
+# Install H2 Driver Module if Needed
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install Install H2 Driver Block If Needed"
+  block:
+
+    # Copy H2 Driver To Keycloak Module Location
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Install Copy H2 Driver To Keycloak Module Location"
+      shell: >
+        mv {{ _h2_jdbc_download_file_path }} {{ _h2_driver_module_dir }} &&
+        touch {{ _h2_driver_module_dir }}/.driver.created
+      args:
+        creates: "{{ _h2_driver_module_dir }}/.driver.created"
+
+    # Generate h2 Driver Module Descriptor
+    - name: "({{ ansible_distribution }}) KEYCLOAK::Install Generate h2 Driver Module Descriptor"
+      template:
+        src: "modules/module.xml.j2"
+        dest: "{{ _h2_driver_module_dir }}/module.xml"
+        owner: "{{ keycloak_os_user }}"
+        group: "{{ keycloak_os_group }}"
+      vars:
+        module_name: "{{ _h2_driver_module.name }}"
+        module_namespace_version: "{{ _h2_driver_module.module_namespace_version }}"
+        module_root_resource: "{{ _h2_driver_module.module_root_resource }}"
+        module_dependencies: "{{ _h2_driver_module.module_dependencies }}"
+        module_artifacts: []
+        module_properties: []
+        module_main_class: ""
+      notify:
+        - rebuild module ownership
+
+  when:
+    - _h2_datasource|bool
+
+# Create Wildfly Management Admin User for Standalone Mode
+- name: "({{ ansible_distribution }}) KEYCLOAK::Install - Create Wildfly Admin user for Standalone Mode"
+  shell: >
+   {{ keycloak_home_dir }}/bin/add-user.sh -u {{ keycloak_admin_user }} -p {{ keycloak_admin_password }} &&
+   touch {{ keycloak_home_dir }}/.mgmt-users.{{ keycloak_admin_user }}.created
+  args:
+   creates: "{{ keycloak_home_dir }}/.mgmt-users.{{ keycloak_admin_user }}.created"
+  when:
+   - keycloak_standalone_mode|bool
