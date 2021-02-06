@@ -25,8 +25,9 @@ before_install:
 
 # Installation actions
 install:
+
     # Install Test tools
-    - pip3 install ansible molecule docker molecule-docker flake8
+    - pip3 install ansible molecule docker molecule-docker flake8 PyMySQL
 
     # Uninstall testinfra 1.19.0
     - pip3 uninstall -y testinfra==1.19.0
