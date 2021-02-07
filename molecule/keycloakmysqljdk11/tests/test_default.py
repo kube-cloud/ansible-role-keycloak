@@ -63,18 +63,6 @@ def test_java_installed(host):
     # Assert that version is Java implementation is OpenJDK
     assert java_impl_ext == java_impl
 
-# Test MySQL is Installed
-def test_mysql_installed(host):
-
-    # Get MySQL service handler
-    service = host.service('mariadb')
-
-    # Check that service is enabled
-    service.is_enabled is True
-
-    # Check that service is started
-    assert service.is_running is True
-
 # Test Keycloak is Installed
 def test_keycloak_installed(host):
 
