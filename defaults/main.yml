@@ -138,4 +138,4 @@ initd_dir: "/etc/init.d"
 init_config_dir: "/etc/default"
 
 # systemd Dir
-systemd_dir: /usr/lib/systemd/system
+systemd_dir: /lib/systemd/system
