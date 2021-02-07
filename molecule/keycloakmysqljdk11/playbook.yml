@@ -3,7 +3,7 @@
 - name: Converge
   hosts: all
   roles:
-   - role: jetune.mysql
+   - role: geerlingguy.mysql
      vars:
       mysql_users:
        - name: keycloak
